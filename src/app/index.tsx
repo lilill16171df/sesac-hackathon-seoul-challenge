@@ -139,6 +139,14 @@ export default function Index() {
       MISSIONS[0],
     [completed],
   );
+  const completionStage =
+    completed.length >= 3
+      ? "🌸"
+      : completed.length >= 2
+        ? "🌿"
+        : completed.length >= 1
+          ? "🌱"
+          : "🪴";
   const toggleInterest = (interest: string) =>
     setInterests((current) =>
       current.includes(interest)
@@ -700,7 +708,7 @@ export default function Index() {
         <View style={styles.modalBackdrop}><View style={styles.growthModal}>
           <Text style={styles.growthPopupBadge}>MISSION COMPLETE</Text>
           <Animated.Text style={[styles.growthPopupPlant, { transform: [{ scale: completionGrowth }] }]}>
-            🌱
+            {completionStage}
           </Animated.Text>
           <Text style={styles.modalTitle}>새싹이 자랐어요!</Text>
           <Text style={styles.modalCopy}>당신의 작은 실천이 오늘의 화분에 새로운 생명을 더했어요.</Text>
@@ -2046,6 +2054,7 @@ const styles: Record<string, any> = StyleSheet.create({
     marginTop: 12,
   },
 });
+
 
 
 
