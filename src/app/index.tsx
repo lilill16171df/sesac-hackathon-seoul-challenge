@@ -1,4 +1,5 @@
 import { StatusBar } from "expo-status-bar";
+import { useAudioPlayer } from "expo-audio";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -134,6 +135,8 @@ export default function Index() {
   const [diaryText, setDiaryText] = useState("");
   const [diaryMood, setDiaryMood] = useState("괜찮아요");
   const [diarySaved, setDiarySaved] = useState(false);
+  const [musicEnabled, setMusicEnabled] = useState(false);
+  const [musicVolume, setMusicVolume] = useState(0.5);
   const [capsuleOpen, setCapsuleOpen] = useState(false);
   const [capsuleCompose, setCapsuleCompose] = useState(false);
   const [capsuleDraft, setCapsuleDraft] = useState("");
@@ -243,6 +246,17 @@ export default function Index() {
               ))}
             </View>
           </View>
+          <View style={styles.musicOnboardingCard}>
+            <Text style={styles.musicTitle}>오늘의 배경음악을 함께할까요?</Text>
+            <Text style={styles.musicCopy}>잔잔한 빗소리가 작은 하루를 감싸줘요.</Text>
+            <View style={styles.musicChoiceRow}>
+              <ChoiceChip label="켜기" selected={musicEnabled} onPress={() => setMusicEnabled(true)} />
+              <ChoiceChip label="나중에" selected={!musicEnabled} onPress={() => setMusicEnabled(false)} />
+            </View>
+            <View style={styles.musicChoiceRow}>
+              {[0.25, 0.5, 0.8].map((level) => <ChoiceChip key={level} label={`${Math.round(level * 100)}%`} selected={musicVolume === level} onPress={() => setMusicVolume(level)} />)}
+            </View>
+          </View>
           <PrimaryButton
             label="가볍게 시작하기"
             onPress={() => {
@@ -259,6 +273,7 @@ export default function Index() {
 
   return (
     <SafeAreaView style={styles.safe}>
+      {profile && <AudioController enabled={musicEnabled} volume={musicVolume} />}
       <StatusBar style="dark" />
       <ScrollView
         contentContainerStyle={styles.screenPad}
@@ -298,7 +313,7 @@ export default function Index() {
         {tab === "room" && (
           <RoomScreen points={points} owned={owned} onBuy={buyFurniture} />
         )}
-        {tab === "rest" && <RestScreen />}
+        {tab === "rest" && <RestScreen musicEnabled={musicEnabled} musicVolume={musicVolume} onToggleMusic={() => setMusicEnabled((value) => !value)} onVolumeChange={setMusicVolume} />}
       </ScrollView>
       <View style={styles.tabBar}>
         <TabButton
@@ -809,6 +824,17 @@ export default function Index() {
   );
 }
 
+function AudioController({ enabled, volume }: { enabled: boolean; volume: number }) {
+  const player = useAudioPlayer(require("../../assets/audio/rain.mp3"));
+  useEffect(() => {
+    player.loop = true;
+    player.volume = volume;
+    if (enabled) player.play();
+    else player.pause();
+  }, [player, enabled, volume]);
+  return null;
+}
+
 function TodayScreen({
   profile,
   mission,
@@ -1126,7 +1152,7 @@ function RoomScreen({
     </View>
   );
 }
-function RestScreen() {
+function RestScreen({ musicEnabled, musicVolume, onToggleMusic, onVolumeChange }: { musicEnabled: boolean; musicVolume: number; onToggleMusic: () => void; onVolumeChange: (value: number) => void }) {
   return (
     <View>
       <Text style={styles.pageTitle}>마음 휴게소</Text>
@@ -1137,6 +1163,10 @@ function RestScreen() {
         <Text style={styles.restCopy}>
           혼자 해결하지 않아도 되는 순간을 위한 서울의 연결을 모아두었어요.
         </Text>
+      </View>
+      <View style={styles.audioControlCard}>
+        <View style={styles.audioHeader}><Text style={styles.audioIcon}>🎧</Text><View style={styles.flex}><Text style={styles.audioTitle}>마음 배경음악</Text><Text style={styles.audioCopy}>{musicEnabled ? "빗소리가 재생 중이에요" : "잠시 쉬고 싶을 때 켜보세요"}</Text></View><Pressable onPress={onToggleMusic} style={styles.audioToggle}><Text style={styles.audioToggleText}>{musicEnabled ? "끄기" : "켜기"}</Text></Pressable></View>
+        <View style={styles.musicChoiceRow}>{[0.25, 0.5, 0.8].map((level) => <ChoiceChip key={level} label={`${Math.round(level * 100)}%`} selected={musicVolume === level} onPress={() => onVolumeChange(level)} />)}</View>
       </View>
       {[
         {
@@ -2169,4 +2199,9 @@ const styles: Record<string, any> = StyleSheet.create({
     fontSize: 12,
     marginTop: 12,
   },
+  musicOnboardingCard: { backgroundColor: COLORS.mint, borderRadius: 18, padding: 16, marginTop: 16 }, musicTitle: { color: COLORS.ink, fontSize: 14, fontWeight: "800" }, musicCopy: { color: COLORS.sageDark, fontSize: 12, marginTop: 4, marginBottom: 12 }, musicChoiceRow: { flexDirection: "row", gap: 8, marginTop: 8 }, audioControlCard: { backgroundColor: COLORS.white, borderRadius: 18, borderWidth: 1, borderColor: COLORS.line, padding: 16, marginBottom: 20 }, audioHeader: { flexDirection: "row", alignItems: "center", gap: 10 }, audioIcon: { fontSize: 24 }, audioTitle: { color: COLORS.ink, fontSize: 14, fontWeight: "800" }, audioCopy: { color: COLORS.muted, fontSize: 12, marginTop: 3 }, audioToggle: { backgroundColor: COLORS.mint, borderRadius: 100, paddingHorizontal: 12, paddingVertical: 8 }, audioToggleText: { color: COLORS.sageDark, fontSize: 12, fontWeight: "800" },
 });
+
+
+
+
