@@ -137,6 +137,8 @@ export default function Index() {
   const [diarySaved, setDiarySaved] = useState(false);
   const [musicEnabled, setMusicEnabled] = useState(false);
   const [musicVolume, setMusicVolume] = useState(0.5);
+  const [audioReady, setAudioReady] = useState(false);
+  useEffect(() => setAudioReady(true), []);
   const [capsuleOpen, setCapsuleOpen] = useState(false);
   const [capsuleCompose, setCapsuleCompose] = useState(false);
   const [capsuleDraft, setCapsuleDraft] = useState("");
@@ -201,6 +203,7 @@ export default function Index() {
   if (!profile)
     return (
       <SafeAreaView style={styles.safe}>
+        {audioReady && <AudioController enabled={musicEnabled} volume={musicVolume} />}
         <StatusBar style="dark" />
         <ScrollView contentContainerStyle={styles.onboarding}>
           <View style={styles.brandMark}>
@@ -273,7 +276,7 @@ export default function Index() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      {profile && <AudioController enabled={musicEnabled} volume={musicVolume} />}
+      {audioReady && <AudioController enabled={musicEnabled} volume={musicVolume} />}
       <StatusBar style="dark" />
       <ScrollView
         contentContainerStyle={styles.screenPad}
@@ -828,9 +831,20 @@ function AudioController({ enabled, volume }: { enabled: boolean; volume: number
   const player = useAudioPlayer(require("../../assets/audio/rain.mp3"));
   useEffect(() => {
     player.loop = true;
-    player.volume = volume;
-    if (enabled) player.play();
-    else player.pause();
+    if (!enabled) {
+      player.pause();
+      player.volume = 0;
+      return;
+    }
+    player.volume = 0;
+    player.play();
+    let current = 0;
+    const timer = setInterval(() => {
+      current = Math.min(current + 0.05, volume);
+      player.volume = current;
+      if (current >= volume) clearInterval(timer);
+    }, 80);
+    return () => clearInterval(timer);
   }, [player, enabled, volume]);
   return null;
 }
