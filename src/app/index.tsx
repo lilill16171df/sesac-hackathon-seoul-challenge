@@ -235,63 +235,6 @@ export default function Index() {
       </SafeAreaView>
     );
 
-  if (selectedMission)
-    return (
-      <SafeAreaView style={styles.safe}>
-        <StatusBar style="dark" />
-        <ScrollView contentContainerStyle={styles.screenPad}>
-          <Pressable
-            onPress={() => {
-              setSelectedMission(null);
-              setPhotoUri(null);
-            }}
-            style={styles.backButton}
-          >
-            <Text style={styles.backText}>‹ 미션 목록</Text>
-          </Pressable>
-          <View style={styles.missionHero}>
-            <Text style={styles.missionEmoji}>{selectedMission.emoji}</Text>
-            <Text style={styles.missionCategory}>
-              {selectedMission.category}
-            </Text>
-            <Text style={styles.detailTitle}>{selectedMission.title}</Text>
-            <Text style={styles.detailCopy}>{selectedMission.description}</Text>
-          </View>
-          <View style={styles.tipCard}>
-            <Text style={styles.tipIcon}>✨</Text>
-            <View style={styles.flex}>
-              <Text style={styles.tipTitle}>작게 해도 충분해요</Text>
-              <Text style={styles.tipCopy}>
-                완벽한 인증보다 지금의 마음을 남기는 것이 더 소중해요.
-              </Text>
-            </View>
-          </View>
-          {photoUri ? (
-            <View style={styles.photoPreview}>
-              <Text style={styles.photoPreviewIcon}>📷</Text>
-              <Text style={styles.photoPreviewText}>
-                오늘의 순간이 담겼어요
-              </Text>
-              <Text style={styles.photoPreviewSub}>시연용 사진 인증</Text>
-            </View>
-          ) : (
-            <Pressable onPress={pickPhoto} style={styles.photoPicker}>
-              <Text style={styles.photoIcon}>📷</Text>
-              <Text style={styles.photoTitle}>사진으로 오늘을 남기기</Text>
-              <Text style={styles.photoSub}>앨범에서 한 장 골라주세요</Text>
-            </Pressable>
-          )}
-          <PrimaryButton
-            label={photoUri ? "인증하고 포인트 받기" : "사진 고르기"}
-            onPress={photoUri ? completeMission : pickPhoto}
-          />
-          <Text style={styles.rewardText}>
-            완료하면 +{selectedMission.reward} 포인트
-          </Text>
-        </ScrollView>
-      </SafeAreaView>
-    );
-
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar style="dark" />
@@ -744,7 +687,19 @@ export default function Index() {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+      <Modal visible={selectedMission !== null} transparent animationType="fade" onRequestClose={() => { setSelectedMission(null); setPhotoUri(null); }}>
+        <View style={styles.modalBackdrop}><View style={styles.missionModal}>
+          <Pressable onPress={() => { setSelectedMission(null); setPhotoUri(null); }} style={styles.modalClose}><Text style={styles.modalCloseText}>×</Text></Pressable>
+          {selectedMission && <>
+            <Text style={styles.missionEmoji}>{selectedMission.emoji}</Text>
+            <Text style={styles.missionCategory}>{selectedMission.category}</Text>
+            <Text style={styles.detailTitle}>{selectedMission.title}</Text>
+            <Text style={styles.detailCopy}>{selectedMission.description}</Text>
+            {photoUri ? <View style={styles.photoPreview}><Text style={styles.photoPreviewIcon}>📷</Text><Text style={styles.photoPreviewText}>오늘의 순간이 담겼어요</Text></View> : <Pressable onPress={pickPhoto} style={styles.photoPicker}><Text style={styles.photoIcon}>📷</Text><Text style={styles.photoTitle}>사진으로 오늘을 남기기</Text></Pressable>}
+            <PrimaryButton label={photoUri ? "인증하고 포인트 받기" : "사진 고르기"} onPress={photoUri ? completeMission : pickPhoto} />
+          </>}
+        </View></View>
+      </Modal></SafeAreaView>
   );
 }
 
@@ -1382,6 +1337,14 @@ const styles: Record<string, any> = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 28,
+  },
+  missionModal: {
+    width: "100%",
+    maxWidth: 390,
+    borderRadius: 26,
+    backgroundColor: COLORS.cream,
+    padding: 24,
+    alignItems: "center",
   },
   feedbackModal: {
     width: "100%",
@@ -2054,3 +2017,7 @@ const styles: Record<string, any> = StyleSheet.create({
     marginTop: 12,
   },
 });
+
+
+
+
