@@ -675,6 +675,75 @@ export default function Index() {
           </View>
         </View>
       </Modal>
+      <Modal
+        visible={capsuleOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setCapsuleOpen(false)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.capsuleModal}>
+            <Pressable
+              accessibilityLabel="타임캡슐 닫기"
+              onPress={() => setCapsuleOpen(false)}
+              style={styles.modalClose}
+            >
+              <Text style={styles.modalCloseText}>×</Text>
+            </Pressable>
+            <Text style={styles.capsuleBigIcon}>⏳</Text>
+            <Text style={styles.mailboxEyebrow}>타임캡슐 소장함</Text>
+            {capsuleMessage ? (
+              <>
+                <Text style={styles.modalTitle}>미래의 나에게서 온 편지</Text>
+                <View style={styles.capsuleLetter}>
+                  <Text style={styles.capsuleLetterText}>“{capsuleMessage}”</Text>
+                </View>
+                <Text style={styles.modalCopy}>
+                  그때의 내가 지금의 나를 꼭 안아주고 있어요.
+                </Text>
+              </>
+            ) : capsuleCompose ? (
+              <>
+                <Text style={styles.modalTitle}>미래의 나에게 남길 한 줄</Text>
+                <TextInput
+                  autoFocus
+                  value={capsuleDraft}
+                  onChangeText={setCapsuleDraft}
+                  placeholder="힘든 날 꺼내볼 응원을 적어주세요"
+                  placeholderTextColor="#A4ADA6"
+                  style={styles.capsuleInput}
+                  multiline
+                  maxLength={100}
+                />
+                <Pressable
+                  onPress={() => {
+                    if (capsuleDraft.trim()) {
+                      setCapsuleMessage(capsuleDraft.trim());
+                      setCapsuleCompose(false);
+                    }
+                  }}
+                  style={styles.capsuleSend}
+                >
+                  <Text style={styles.sendButtonText}>타임캡슐에 보관하기</Text>
+                </Pressable>
+              </>
+            ) : (
+              <>
+                <Text style={styles.modalTitle}>미래의 나에게</Text>
+                <Text style={styles.modalCopy}>
+                  나중에 힘들 때 꺼내볼 응원 한 줄을 남겨보세요.
+                </Text>
+                <Pressable
+                  onPress={() => setCapsuleCompose(true)}
+                  style={styles.capsuleSend}
+                >
+                  <Text style={styles.sendButtonText}>응원 한 줄 남기기</Text>
+                </Pressable>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
