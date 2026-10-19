@@ -152,7 +152,7 @@ export default function Index() {
       setPoints((current) => current + selectedMission.reward);
     }
     setFeedback("오늘도 해냈어요 🌿");
-    setFeedbackOpen(true);
+    setFeedbackOpen(false);
     setSelectedMission(null);
     setPhotoUri(null);
     setTab("missions");
@@ -695,6 +695,13 @@ export default function Index() {
             <Text style={styles.missionCategory}>{selectedMission.category}</Text>
             <Text style={styles.detailTitle}>{selectedMission.title}</Text>
             <Text style={styles.detailCopy}>{selectedMission.description}</Text>
+            <View style={styles.missionSupport}>
+              <Text style={styles.missionSupportIcon}>🌼</Text>
+              <View style={styles.flex}>
+                <Text style={styles.missionSupportTitle}>먼저 해낸 사람의 응원</Text>
+                <Text style={styles.missionSupportCopy}>작은 미션 하나를 고른 당신, 오늘도 충분히 잘하고 있어요.</Text>
+              </View>
+            </View>
             {photoUri ? <View style={styles.photoPreview}><Text style={styles.photoPreviewIcon}>📷</Text><Text style={styles.photoPreviewText}>오늘의 순간이 담겼어요</Text></View> : <Pressable onPress={pickPhoto} style={styles.photoPicker}><Text style={styles.photoIcon}>📷</Text><Text style={styles.photoTitle}>사진으로 오늘을 남기기</Text></Pressable>}
             <PrimaryButton label={photoUri ? "인증하고 포인트 받기" : "사진 고르기"} onPress={photoUri ? completeMission : pickPhoto} />
           </>}
@@ -1346,6 +1353,7 @@ const styles: Record<string, any> = StyleSheet.create({
     padding: 24,
     alignItems: "center",
   },
+  missionSupport: { width: "100%", backgroundColor: COLORS.mint, borderRadius: 16, padding: 13, flexDirection: "row", gap: 10, alignItems: "flex-start", marginTop: 16, marginBottom: 4 }, missionSupportIcon: { fontSize: 22 }, missionSupportTitle: { color: COLORS.sageDark, fontSize: 12, fontWeight: "800" }, missionSupportCopy: { color: COLORS.sageDark, fontSize: 12, lineHeight: 18, marginTop: 3 },
   feedbackModal: {
     width: "100%",
     maxWidth: 360,
