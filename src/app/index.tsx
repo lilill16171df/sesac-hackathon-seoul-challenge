@@ -110,6 +110,14 @@ export default function Index() {
   const [relayOpen, setRelayOpen] = useState(false);
   const [relayDraft, setRelayDraft] = useState("");
   const [relaySent, setRelaySent] = useState(false);
+  const [growthPopupOpen, setGrowthPopupOpen] = useState(false);
+  const completionGrowth = useRef(new Animated.Value(0.15)).current;
+  useEffect(() => {
+    if (growthPopupOpen) {
+      completionGrowth.setValue(0.15);
+      Animated.spring(completionGrowth, { toValue: 1, useNativeDriver: false, friction: 5, tension: 55 }).start();
+    }
+  }, [growthPopupOpen, completionGrowth]);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [mailboxOpen, setMailboxOpen] = useState(false);
   const [composeMode, setComposeMode] = useState(false);
@@ -158,7 +166,8 @@ export default function Index() {
     setTab("missions");
     setRelayDraft("");
     setRelaySent(false);
-    setRelayOpen(true);
+    setRelayOpen(false);
+    setGrowthPopupOpen(true);
   };
   const buyFurniture = (id: string, cost: number) => {
     if (owned.includes(id)) return;
@@ -686,6 +695,17 @@ export default function Index() {
             )}
           </View>
         </View>
+      </Modal>
+      <Modal visible={growthPopupOpen} transparent animationType="fade" onRequestClose={() => setGrowthPopupOpen(false)}>
+        <View style={styles.modalBackdrop}><View style={styles.growthModal}>
+          <Text style={styles.growthPopupBadge}>MISSION COMPLETE</Text>
+          <Animated.Text style={[styles.growthPopupPlant, { transform: [{ scale: completionGrowth }] }]}>
+            🌱
+          </Animated.Text>
+          <Text style={styles.modalTitle}>새싹이 자랐어요!</Text>
+          <Text style={styles.modalCopy}>당신의 작은 실천이 오늘의 화분에 새로운 생명을 더했어요.</Text>
+          <Pressable onPress={() => { setGrowthPopupOpen(false); setRelayOpen(true); }} style={styles.growthContinue}><Text style={styles.sendButtonText}>따뜻함 이어가기</Text></Pressable>
+        </View></View>
       </Modal>
       <Modal visible={selectedMission !== null} transparent animationType="fade" onRequestClose={() => { setSelectedMission(null); setPhotoUri(null); }}>
         <View style={styles.modalBackdrop}><View style={styles.missionModal}>
@@ -1354,6 +1374,7 @@ const styles: Record<string, any> = StyleSheet.create({
     alignItems: "center",
   },
   missionSupport: { width: "100%", backgroundColor: COLORS.mint, borderRadius: 16, padding: 13, flexDirection: "row", gap: 10, alignItems: "flex-start", marginTop: 16, marginBottom: 4 }, missionSupportIcon: { fontSize: 22 }, missionSupportTitle: { color: COLORS.sageDark, fontSize: 12, fontWeight: "800" }, missionSupportCopy: { color: COLORS.sageDark, fontSize: 12, lineHeight: 18, marginTop: 3 },
+  growthModal: { width: "100%", maxWidth: 360, borderRadius: 28, backgroundColor: COLORS.cream, padding: 28, alignItems: "center" }, growthPopupBadge: { color: COLORS.sageDark, fontSize: 11, fontWeight: "800", letterSpacing: 1.4, marginBottom: 14 }, growthPopupPlant: { fontSize: 92, marginVertical: 8 }, growthContinue: { width: "100%", backgroundColor: COLORS.sageDark, borderRadius: 15, paddingVertical: 14, alignItems: "center", marginTop: 20 },
   feedbackModal: {
     width: "100%",
     maxWidth: 360,
