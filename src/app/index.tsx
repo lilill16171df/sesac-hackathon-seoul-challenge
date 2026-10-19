@@ -115,7 +115,12 @@ export default function Index() {
   useEffect(() => {
     if (growthPopupOpen) {
       completionGrowth.setValue(0.15);
-      Animated.spring(completionGrowth, { toValue: 1, useNativeDriver: false, friction: 5, tension: 55 }).start();
+      Animated.spring(completionGrowth, {
+        toValue: 1,
+        useNativeDriver: false,
+        friction: 5,
+        tension: 55,
+      }).start();
     }
   }, [growthPopupOpen, completionGrowth]);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -549,20 +554,18 @@ export default function Index() {
             <Text style={styles.mailboxEyebrow}>오늘의 한 줄 일기</Text>
             <Text style={styles.modalTitle}>오늘 마음은 어땠나요?</Text>
             <View style={styles.moodRow}>
-              {["가벼워요", "괜찮아요", "조금 지쳐요", "마음이 무거워요"].map(
-                (mood) => (
-                  <Pressable
-                    key={mood}
-                    onPress={() => setDiaryMood(mood)}
-                    style={[
-                      styles.moodChip,
-                      diaryMood === mood && styles.moodChipSelected,
-                    ]}
-                  >
-                    <Text style={styles.moodChipText}>{mood}</Text>
-                  </Pressable>
-                ),
-              )}
+              {["☀️", "🌤️", "⛅", "🌧️", "🌩️"].map((mood) => (
+                <Pressable
+                  key={mood}
+                  onPress={() => setDiaryMood(mood)}
+                  style={[
+                    styles.moodChip,
+                    diaryMood === mood && styles.moodChipSelected,
+                  ]}
+                >
+                  <Text style={styles.moodChipText}>{mood}</Text>
+                </Pressable>
+              ))}
             </View>
             <TextInput
               value={diaryText}
@@ -606,9 +609,7 @@ export default function Index() {
               마음의 날씨가{`\n`}조금씩 달라지고 있어요
             </Text>
             <View style={styles.moodChart}>
-              <Text style={styles.chartText}>
-                가벼워요 　● ●　 괜찮아요 ●　 조금 지쳐요 ●
-              </Text>
+              <Text style={styles.chartText}>🌤️ ●● ⛅ ● 🌧️ ●</Text>
               <View style={styles.chartLine}>
                 <Text>월　 화　 수　 목　 금　 토　 일</Text>
               </View>
@@ -617,7 +618,7 @@ export default function Index() {
               일기를 남긴 날에는 내 마음을 한 번 더 살펴볼 수 있었어요. 완벽하게
               좋아지지 않아도, 변화를 알아차린 것만으로 충분한 한 주예요.
             </Text>
-            {diaryMood === "마음이 무거워요" ? (
+            {diaryMood === "🌩️" ? (
               <View style={styles.gentleHelp}>
                 <Text style={styles.gentleHelpTitle}>
                   조금 더 기대어도 괜찮아요
@@ -656,7 +657,9 @@ export default function Index() {
               <>
                 <Text style={styles.modalTitle}>미래의 나에게서 온 편지</Text>
                 <View style={styles.capsuleLetter}>
-                  <Text style={styles.capsuleLetterText}>“{capsuleMessage}”</Text>
+                  <Text style={styles.capsuleLetterText}>
+                    “{capsuleMessage}”
+                  </Text>
                 </View>
                 <Text style={styles.modalCopy}>
                   그때의 내가 지금의 나를 꼭 안아주고 있어요.
@@ -704,37 +707,105 @@ export default function Index() {
           </View>
         </View>
       </Modal>
-      <Modal visible={growthPopupOpen} transparent animationType="fade" onRequestClose={() => setGrowthPopupOpen(false)}>
-        <View style={styles.modalBackdrop}><View style={styles.growthModal}>
-          <Text style={styles.growthPopupBadge}>MISSION COMPLETE</Text>
-          <Animated.Text style={[styles.growthPopupPlant, { transform: [{ scale: completionGrowth }] }]}>
-            {completionStage}
-          </Animated.Text>
-          <Text style={styles.modalTitle}>새싹이 자랐어요!</Text>
-          <Text style={styles.modalCopy}>당신의 작은 실천이 오늘의 화분에 새로운 생명을 더했어요.</Text>
-          <Pressable onPress={() => { setGrowthPopupOpen(false); setRelayOpen(true); }} style={styles.growthContinue}><Text style={styles.sendButtonText}>따뜻함 이어가기</Text></Pressable>
-        </View></View>
+      <Modal
+        visible={growthPopupOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setGrowthPopupOpen(false)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.growthModal}>
+            <Text style={styles.growthPopupBadge}>MISSION COMPLETE</Text>
+            <Animated.Text
+              style={[
+                styles.growthPopupPlant,
+                { transform: [{ scale: completionGrowth }] },
+              ]}
+            >
+              {completionStage}
+            </Animated.Text>
+            <Text style={styles.modalTitle}>새싹이 자랐어요!</Text>
+            <Text style={styles.modalCopy}>
+              당신의 작은 실천이 오늘의 화분에 새로운 생명을 더했어요.
+            </Text>
+            <Pressable
+              onPress={() => {
+                setGrowthPopupOpen(false);
+                setRelayOpen(true);
+              }}
+              style={styles.growthContinue}
+            >
+              <Text style={styles.sendButtonText}>따뜻함 이어가기</Text>
+            </Pressable>
+          </View>
+        </View>
       </Modal>
-      <Modal visible={selectedMission !== null} transparent animationType="fade" onRequestClose={() => { setSelectedMission(null); setPhotoUri(null); }}>
-        <View style={styles.modalBackdrop}><View style={styles.missionModal}>
-          <Pressable onPress={() => { setSelectedMission(null); setPhotoUri(null); }} style={styles.modalClose}><Text style={styles.modalCloseText}>×</Text></Pressable>
-          {selectedMission && <>
-            <Text style={styles.missionEmoji}>{selectedMission.emoji}</Text>
-            <Text style={styles.missionCategory}>{selectedMission.category}</Text>
-            <Text style={styles.detailTitle}>{selectedMission.title}</Text>
-            <Text style={styles.detailCopy}>{selectedMission.description}</Text>
-            <View style={styles.missionSupport}>
-              <Text style={styles.missionSupportIcon}>🌼</Text>
-              <View style={styles.flex}>
-                <Text style={styles.missionSupportTitle}>먼저 해낸 사람의 응원</Text>
-                <Text style={styles.missionSupportCopy}>작은 미션 하나를 고른 당신, 오늘도 충분히 잘하고 있어요.</Text>
-              </View>
-            </View>
-            {photoUri ? <View style={styles.photoPreview}><Text style={styles.photoPreviewIcon}>📷</Text><Text style={styles.photoPreviewText}>오늘의 순간이 담겼어요</Text></View> : <Pressable onPress={pickPhoto} style={styles.photoPicker}><Text style={styles.photoIcon}>📷</Text><Text style={styles.photoTitle}>사진으로 오늘을 남기기</Text></Pressable>}
-            <PrimaryButton label={photoUri ? "인증하고 포인트 받기" : "사진 고르기"} onPress={photoUri ? completeMission : pickPhoto} />
-          </>}
-        </View></View>
-      </Modal></SafeAreaView>
+      <Modal
+        visible={selectedMission !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          setSelectedMission(null);
+          setPhotoUri(null);
+        }}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.missionModal}>
+            <Pressable
+              onPress={() => {
+                setSelectedMission(null);
+                setPhotoUri(null);
+              }}
+              style={styles.modalClose}
+            >
+              <Text style={styles.modalCloseText}>×</Text>
+            </Pressable>
+            {selectedMission && (
+              <>
+                <Text style={styles.missionEmoji}>{selectedMission.emoji}</Text>
+                <Text style={styles.missionCategory}>
+                  {selectedMission.category}
+                </Text>
+                <Text style={styles.detailTitle}>{selectedMission.title}</Text>
+                <Text style={styles.detailCopy}>
+                  {selectedMission.description}
+                </Text>
+                <View style={styles.missionSupport}>
+                  <Text style={styles.missionSupportIcon}>🌼</Text>
+                  <View style={styles.flex}>
+                    <Text style={styles.missionSupportTitle}>
+                      먼저 해낸 사람의 응원
+                    </Text>
+                    <Text style={styles.missionSupportCopy}>
+                      작은 미션 하나를 고른 당신, 오늘도 충분히 잘하고 있어요.
+                    </Text>
+                  </View>
+                </View>
+                {photoUri ? (
+                  <View style={styles.photoPreview}>
+                    <Text style={styles.photoPreviewIcon}>📷</Text>
+                    <Text style={styles.photoPreviewText}>
+                      오늘의 순간이 담겼어요
+                    </Text>
+                  </View>
+                ) : (
+                  <Pressable onPress={pickPhoto} style={styles.photoPicker}>
+                    <Text style={styles.photoIcon}>📷</Text>
+                    <Text style={styles.photoTitle}>
+                      사진으로 오늘을 남기기
+                    </Text>
+                  </Pressable>
+                )}
+                <PrimaryButton
+                  label={photoUri ? "인증하고 포인트 받기" : "사진 고르기"}
+                  onPress={photoUri ? completeMission : pickPhoto}
+                />
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
 }
 
@@ -1381,8 +1452,53 @@ const styles: Record<string, any> = StyleSheet.create({
     padding: 24,
     alignItems: "center",
   },
-  missionSupport: { width: "100%", backgroundColor: COLORS.mint, borderRadius: 16, padding: 13, flexDirection: "row", gap: 10, alignItems: "flex-start", marginTop: 16, marginBottom: 4 }, missionSupportIcon: { fontSize: 22 }, missionSupportTitle: { color: COLORS.sageDark, fontSize: 12, fontWeight: "800" }, missionSupportCopy: { color: COLORS.sageDark, fontSize: 12, lineHeight: 18, marginTop: 3 },
-  growthModal: { width: "100%", maxWidth: 360, borderRadius: 28, backgroundColor: COLORS.cream, padding: 28, alignItems: "center" }, growthPopupBadge: { color: COLORS.sageDark, fontSize: 11, fontWeight: "800", letterSpacing: 1.4, marginBottom: 14 }, growthPopupPlant: { fontSize: 92, marginVertical: 8 }, growthContinue: { width: "100%", backgroundColor: COLORS.sageDark, borderRadius: 15, paddingVertical: 14, alignItems: "center", marginTop: 20 },
+  missionSupport: {
+    width: "100%",
+    backgroundColor: COLORS.mint,
+    borderRadius: 16,
+    padding: 13,
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "flex-start",
+    marginTop: 16,
+    marginBottom: 4,
+  },
+  missionSupportIcon: { fontSize: 22 },
+  missionSupportTitle: {
+    color: COLORS.sageDark,
+    fontSize: 12,
+    fontWeight: "800",
+  },
+  missionSupportCopy: {
+    color: COLORS.sageDark,
+    fontSize: 12,
+    lineHeight: 18,
+    marginTop: 3,
+  },
+  growthModal: {
+    width: "100%",
+    maxWidth: 360,
+    borderRadius: 28,
+    backgroundColor: COLORS.cream,
+    padding: 28,
+    alignItems: "center",
+  },
+  growthPopupBadge: {
+    color: COLORS.sageDark,
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 1.4,
+    marginBottom: 14,
+  },
+  growthPopupPlant: { fontSize: 92, marginVertical: 8 },
+  growthContinue: {
+    width: "100%",
+    backgroundColor: COLORS.sageDark,
+    borderRadius: 15,
+    paddingVertical: 14,
+    alignItems: "center",
+    marginTop: 20,
+  },
   feedbackModal: {
     width: "100%",
     maxWidth: 360,
@@ -2054,8 +2170,3 @@ const styles: Record<string, any> = StyleSheet.create({
     marginTop: 12,
   },
 });
-
-
-
-
-
